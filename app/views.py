@@ -19,7 +19,31 @@ from models import UserProfile
 @app.route('/')
 def home():
     """Render website's home page."""
-    return render_template('home.html')
+    form = LoginForm()
+    if request.method == "POST" and form.validate_on_submit():
+        # change this to actually validate the entire form submission
+        # and not just one field
+        firstname = form.firstname.data
+        lastname = form.lastname.data
+        gender = form.gender.data
+        email = form.email.data
+        location = form.location.data
+        biography = form.biography.data
+        
+        user = UserProfile(
+            first_name=firstname,
+            last_name=lastname, 
+            gender=gender,
+            email=email,
+            location = location,
+            biography=biography)
+            
+        db.session.add(user)
+        db.session.commit()
+        
+        #user = UserProfile.query.filter_by(username=username).first()
+        
+    return render_template('home.html',form=form)
 
 
 @app.route('/about/')
@@ -28,14 +52,46 @@ def about():
     return render_template('about.html')
 
 
+@app.route('/profiles/')
+def profiles():
+    return render_template("profiles.html")
+    
+@app.route('/profile/<userid>')
+def profile(userid):
+    
+    user = UserProfile.query.filter_by(id=userid).first()
+    
+    firstname = user.first_name
+    lastname = user.last_name
+    gender = user.gender
+    email = user.email
+    location = user.location
+    biography = user.biography
+    
+    
+    
+    
+    return render_template("profile.html", 
+    firstname = user.firstname,
+    lastname = user.lastname,
+    gender = user.gender,
+    email = user.email,
+    location = user.location,
+    biography = user.biography)
+    
+    
 @app.route("/login", methods=["GET", "POST"])
 def login():
     form = LoginForm()
     if request.method == "POST" and form.validate_on_submit():
         # change this to actually validate the entire form submission
         # and not just one field
-        username = form.username.data
-        password = form.password.data
+        firstname = form.firstname.data
+        lastname = form.lastname.data
+        gender = form.gender.data
+        email = form.email.data
+        location = form.location.data
+        bio = form.biography.data
         
         user = UserProfile.query.filter_by(username=username).first()
         
